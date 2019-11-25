@@ -70,4 +70,14 @@ router.put('/', async (req, res) => {
   }
 });
 
+router.delete('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const status = await RecipeService.deleteById(id);
+    res.send(status);
+  } catch (err) {
+    res.send(err.response.data.message);
+  }
+});
+
 module.exports = router;
