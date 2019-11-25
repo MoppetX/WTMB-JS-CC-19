@@ -30,30 +30,34 @@ router.post(`/`, async (req, res) => {
   }
 });
 
-// router.get(`/:id`, async (req, res) => {
-//   const id = req.params.id;
-//   const user = await RecipeService.findById(id);
-//
-//   res.send(user);
-//   // res.render('user', { user, users });
-// });
-//
-//
-// router.post(`/`, async (req, res) => {
-//   try {
-//     const user = await RecipeService.add(req.body);
-//     res.send(user);
-//   } catch (err) {
-//     console.error(err.message);
-//   }
-// });
-//
-//
-// router.delete(`/:id`, async (req, res) => {
-//   const id = req.params.id;
-//   await RecipeService.deleteById(id);
-//
-//   res.send('ok');
-// });
+router.get('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const recipe = await RecipeService.findById(id);
+
+    if (!recipe) {
+      res.status(404).send(`Error: Could not find recipe for id >${id}<`);
+    } else {
+      res.send(recipe);
+    }
+  } catch (err) {
+    res.status(500).send(err.response.data.message);
+  }
+});
+
+router.get('/', async (req, res) => {
+  try {
+    const query = req.query;
+    const recipes = await RecipeService.find(query);
+
+    if (recipes.length === 0) {
+      res.status(404).send(`Error: Could not find recipes`);
+    } else {
+      res.send(recipes);
+    }
+  } catch (err) {
+    res.send(err.response.data.message);
+  }
+});
 
 module.exports = router;

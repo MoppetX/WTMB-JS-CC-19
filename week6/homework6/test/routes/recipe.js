@@ -76,6 +76,18 @@ test.serial('create a recipe', async t => {
   t.is(recipeInDb.title, createdRecipe.title);
 });
 
+test.serial('get a recipe via params', async t => {
+  const { app, recipeRoute, newRecipe } = t.context;
+  const [recipeInDb] = await RecipeService.find({ title: newRecipe.title });
+  const newRecipeId = recipeInDb._id.toString();
+
+  const res = await request(app).get(`${recipeRoute}/${newRecipeId}`);
+  t.is(res.status, 200);
+
+  const fetchedRecipeId = res.body._id.toString();
+  t.is(fetchedRecipeId, newRecipeId);
+});
+
 test.after.always(async () => {
   RecipeModel.deleteMany();
   await mongoose.disconnect();
