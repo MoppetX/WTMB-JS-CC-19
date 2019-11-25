@@ -60,4 +60,14 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.put('/', async (req, res) => {
+  try {
+    const { query, body } = req;
+    const update = await RecipeService.update(query, body);
+    res.send(update);
+  } catch (err) {
+    res.send(err.response.data.message);
+  }
+});
+
 module.exports = router;

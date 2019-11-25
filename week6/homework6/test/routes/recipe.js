@@ -56,7 +56,26 @@ test('get all recipes', async t => {
 
   t.is(res.status, 200);
   t.true(Array.isArray(res.body));
-  t.true(res.body.length >= 1);
+  t.true(res.body.length >= 2);
+});
+
+test('get recipes via query', async t => {
+  const { app, recipeRoute } = t.context;
+
+  const res = await request(app)
+    .get(`${recipeRoute}/`)
+    .query({
+      title: /Eggs/,
+    })
+    .send({
+      sort: 'title',
+    });
+
+  const foundRecipes = res.body;
+
+  t.is(res.status, 200);
+  t.true(Array.isArray(foundRecipes));
+  t.true(foundRecipes.length >= 2);
 });
 
 test.serial('create a recipe', async t => {
@@ -89,23 +108,29 @@ test.serial('get a recipe via params', async t => {
   t.is(fetchedRecipeId, newRecipeId);
 });
 
-test.serial('get recipes via query', async t => {
-  const { app, recipeRoute } = t.context;
+test.serial('update a recipe', async t => {
+  const { app, recipeRoute, newRecipe } = t.context;
+  const [recipeInDb] = await RecipeService.find({ title: newRecipe.title });
+  const recipeId = recipeInDb._id.toString();
+  const newTitle = 'Yummy Scrambled Eggs';
 
   const res = await request(app)
-    .get(`${recipeRoute}/`)
-    .query({
-      title: /Eggs/,
-    })
-    .send({
-      sort: 'title',
-    });
+    .put(`${recipeRoute}/`)
+    .query({ _id: recipeId })
+    .send({ title: newTitle });
 
-  t.true(true);
-  const foundRecipes = res.body;
+  console.log('TEST RECIPE');
+  console.log(res.body);
 
+  // t.true(true);
   t.is(res.status, 200);
-  t.true(Array.isArray(foundRecipes));
+  t.true(res.body.ok === 1);
+
+  const fetched = await request(app).get(`${recipeRoute}/${recipeId}`);
+
+  const updatedRecipe = fetched.body;
+  t.is(fetched.status, 200);
+  t.is(updatedRecipe.title, newTitle);
 });
 
 test.after.always(async () => {

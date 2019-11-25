@@ -138,7 +138,6 @@ test.serial('update a user', async t => {
       update: { name: newName },
     });
 
-  t.true(true);
   t.is(res.status, 200);
   t.true(res.body.ok === 1);
 
