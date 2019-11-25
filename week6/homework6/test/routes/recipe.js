@@ -6,6 +6,7 @@ import mongoose from 'mongoose';
 import app from '../../app';
 import RecipeModel from '../../models/recipe';
 import RecipeService from '../../services/recipe-service';
+import UserModel from '../../models/user';
 
 // Start MongoDB instance
 const mongod = new MongoMemoryServer();
@@ -28,10 +29,15 @@ test.before(async () => {
     .catch(err => console.error(err.message));
 
   // populating  database with dummy data
-  const recipe = new RecipeModel({
-    title: 'Boiled Egg',
+  const recipe1 = new RecipeModel({
+    title: 'Boiled Eggs',
   });
-  await recipe.save();
+  await recipe1.save();
+
+  const recipe2 = new RecipeModel({
+    title: 'Fried Eggs',
+  });
+  recipe2.save();
 });
 
 test.beforeEach(async t => {
@@ -44,26 +50,17 @@ test.beforeEach(async t => {
   };
 });
 
-const checkLitmusResponse = (t, res) => {
-  t.is(res.status, 200);
-  t.is(res.text, `Test route for ${res.req.path} [${res.req.method}]`);
-};
-
-test.serial('litmus tests for GET/POST/DELETE/PUT', async t => {
-  t.plan(8);
+test('get all recipes', async t => {
   const { app, recipeRoute } = t.context;
-  const litmusRoute = `${recipeRoute}/litmus`;
-  let res;
+  const res = await request(app).get(`${recipeRoute}/all`);
 
-  res = await request(app).get(litmusRoute);
-  checkLitmusResponse(t, res);
+  t.is(res.status, 200);
+  t.true(Array.isArray(res.body));
+  t.true(res.body.length >= 1);
+});
 
-  res = await request(app).post(litmusRoute);
-  checkLitmusResponse(t, res);
-
-  res = await request(app).delete(litmusRoute);
-  checkLitmusResponse(t, res);
-
-  res = await request(app).put(litmusRoute);
-  checkLitmusResponse(t, res);
+test.after.always(async () => {
+  UserModel.deleteMany();
+  await mongoose.disconnect();
+  await mongod.stop();
 });

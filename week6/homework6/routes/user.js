@@ -13,7 +13,6 @@ router.delete('/litmus', (req, res) => res.send(litmusResponseMsg(req)));
 router.put('/litmus', (req, res) => res.send(litmusResponseMsg(req)));
 
 router.get('/all', async (req, res) => {
-  // res.send([]);
   try {
     const users = await UserService.findAll();
     res.send(users);

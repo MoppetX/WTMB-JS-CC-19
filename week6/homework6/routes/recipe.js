@@ -1,23 +1,26 @@
 const express = require('express');
 const router = express.Router();
-// const RecipeService = require('../services/recipe-service');
+const RecipeService = require('../services/recipe-service');
 
-const litmusResponseMsg = req =>
-  `Test route for ${req.originalUrl} [${req.method}]`;
+// const litmusResponseMsg = req =>
+//   `Test route for ${req.originalUrl} [${req.method}]`;
+//
+// router.get('/litmus', (req, res) => res.send(litmusResponseMsg(req)));
+// router.post('/litmus', (req, res) => res.send(litmusResponseMsg(req)));
+// router.delete('/litmus', (req, res) => res.send(litmusResponseMsg(req)));
+// router.put('/litmus', (req, res) => res.send(litmusResponseMsg(req)));
 
-router.get('/litmus', (req, res) => res.send(litmusResponseMsg(req)));
-router.post('/litmus', (req, res) => res.send(litmusResponseMsg(req)));
-router.delete('/litmus', (req, res) => res.send(litmusResponseMsg(req)));
-router.put('/litmus', (req, res) => res.send(litmusResponseMsg(req)));
+router.get('/all', async (req, res) => {
+  try {
+    const recipes = await RecipeService.findAll();
+    if (recipes.length === 0) res.status(404);
+    res.send(recipes);
+    // res.render('recipes', { recipes });
+  } catch (err) {
+    res.send(err.response.data.message);
+  }
+});
 
-//
-// router.get('/all', async (req, res) => {
-//   const recipes = await RecipeService.findAll();
-//   res.send(recipes);
-//   // res.render('users', { users });
-// });
-//
-//
 // router.delete('/all', async (req, res) => {
 //   await RecipeService.delete();
 //   console.log(await RecipeService.find().length);

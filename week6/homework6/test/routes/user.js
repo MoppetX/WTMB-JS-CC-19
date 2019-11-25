@@ -72,7 +72,7 @@ test.serial('litmus tests for GET/POST/DELETE/PUT', async t => {
   checkLitmusResponse(t, res);
 });
 
-test.serial('get all users', async t => {
+test('get all users', async t => {
   const { app, userRoute } = t.context;
   const res = await request(app).get(`${userRoute}/all`);
 
@@ -189,8 +189,8 @@ test.serial('delete one user via params', async t => {
 
 // clearing Dummy data
 // disconnect from and stop MongoDB
-test.after.always(() => {
+test.after.always(async () => {
   UserModel.deleteMany();
-  mongoose.disconnect();
-  mongod.stop();
+  await mongoose.disconnect();
+  await mongod.stop();
 });
