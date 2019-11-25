@@ -1,54 +1,63 @@
 const express = require('express');
 const router = express.Router();
-const HttpStatus = require('http-status-codes');
-// const RecipeService = require('../services/recipe-service');
+const RecipeService = require('../services/recipe-service');
 
-router.get('/test', (req, res) => res.send('Test route for recipe [GET]'));
+// const litmusResponseMsg = req =>
+//   `Test route for ${req.originalUrl} [${req.method}]`;
+//
+// router.get('/litmus', (req, res) => res.send(litmusResponseMsg(req)));
+// router.post('/litmus', (req, res) => res.send(litmusResponseMsg(req)));
+// router.delete('/litmus', (req, res) => res.send(litmusResponseMsg(req)));
+// router.put('/litmus', (req, res) => res.send(litmusResponseMsg(req)));
 
-router.post('/test', (req, res) =>
-  res.status(HttpStatus.OK).send('Test route for recipe [POST]'),
-);
+router.get('/all', async (req, res) => {
+  try {
+    const recipes = await RecipeService.findAll();
+    if (recipes.length === 0) res.status(404);
+    res.send(recipes);
+    // res.render('recipes', { recipes });
+  } catch (err) {
+    res.send(err.response.data.message);
+  }
+});
 
-//
-// router.get('/all', async (req, res) => {
-//   const recipes = await RecipeService.findAll();
-//   res.send(recipes);
-//   // res.render('users', { users });
-// });
-//
-//
-// router.delete('/all', async (req, res) => {
-//   await RecipeService.delete();
-//   console.log(await RecipeService.find().length);
-//
-//   res.send('USERS PURGED');
-// });
-//
-//
-// router.get(`/:id`, async (req, res) => {
-//   const id = req.params.id;
-//   const user = await RecipeService.findById(id);
-//
-//   res.send(user);
-//   // res.render('user', { user, users });
-// });
-//
-//
-// router.post(`/`, async (req, res) => {
-//   try {
-//     const user = await RecipeService.add(req.body);
-//     res.send(user);
-//   } catch (err) {
-//     console.error(err.message);
-//   }
-// });
-//
-//
-// router.delete(`/:id`, async (req, res) => {
-//   const id = req.params.id;
-//   await RecipeService.deleteById(id);
-//
-//   res.send('ok');
-// });
+router.post(`/`, async (req, res) => {
+  try {
+    const recipe = await RecipeService.add(req.body);
+    res.send(recipe);
+  } catch (err) {
+    res.send(err.response.data.message);
+  }
+});
+
+router.get('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const recipe = await RecipeService.findById(id);
+
+    if (!recipe) {
+      res.status(404).send(`Error: Could not find recipe for id >${id}<`);
+    } else {
+      res.send(recipe);
+    }
+  } catch (err) {
+    res.status(500).send(err.response.data.message);
+  }
+});
+
+router.get('/', async (req, res) => {
+  try {
+    const query = req.query;
+    const recipes = await RecipeService.find(query);
+
+    if (recipes.length === 0) {
+      res.status(404).send(`Error: Could not find recipes`);
+    } else {
+      res.send(recipes);
+    }
+  } catch (err) {
+    res.send(err.response.data.message);
+  }
+});
 
 module.exports = router;
