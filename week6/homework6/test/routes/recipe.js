@@ -6,6 +6,7 @@ import mongoose from 'mongoose';
 import app from '../../app';
 import RecipeModel from '../../models/recipe';
 import RecipeService from '../../services/recipe-service';
+import UserService from '../../services/user-service';
 
 // Start MongoDB instance
 const mongod = new MongoMemoryServer();
@@ -86,6 +87,25 @@ test.serial('get a recipe via params', async t => {
 
   const fetchedRecipeId = res.body._id.toString();
   t.is(fetchedRecipeId, newRecipeId);
+});
+
+test.serial('get recipes via query', async t => {
+  const { app, recipeRoute } = t.context;
+
+  const res = await request(app)
+    .get(`${recipeRoute}/`)
+    .query({
+      title: /Eggs/,
+    })
+    .send({
+      sort: 'title',
+    });
+
+  t.true(true);
+  const foundRecipes = res.body;
+
+  t.is(res.status, 200);
+  t.true(Array.isArray(foundRecipes));
 });
 
 test.after.always(async () => {
