@@ -44,17 +44,20 @@ router.get('/', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   try {
-    const id = req.params.id;
+    const { id } = req.params;
     const user = await UserService.findById(id);
+
+    if (!user) res.status(404);
+
     res.send(user);
   } catch (err) {
-    res.send(err.response.data.message);
+    res.status(500).send(err.response.data.message);
   }
 });
 
-router.delete('/', async (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
-    const { id } = req.query.id;
+    const { id } = req.params;
     const user = await UserService.deleteById(id);
     res.send(user);
   } catch (err) {
