@@ -169,24 +169,6 @@ test.serial('delete one user via params', async t => {
   t.is(fetch.status, 404);
 });
 
-// test('Create new user', async t => {
-//   t.plan(3);
-//
-//   const userToCreate = {
-//     name: 'Armagan Amcalar',
-//     age: 34,
-//     meetups: [],
-//   };
-//
-//   const res = await request(app)
-//     .post('/person')
-//     .send(userToCreate);
-//
-//   t.is(res.status, 200);
-//   t.is(res.body.name, userToCreate.name);
-//   t.is(res.body.age, userToCreate.age);
-// });
-
 // clearing Dummy data
 // disconnect from and stop MongoDB
 test.after.always(async () => {

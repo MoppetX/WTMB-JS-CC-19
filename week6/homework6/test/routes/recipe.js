@@ -6,7 +6,6 @@ import mongoose from 'mongoose';
 import app from '../../app';
 import RecipeModel from '../../models/recipe';
 import RecipeService from '../../services/recipe-service';
-import UserModel from '../../models/user';
 
 // Start MongoDB instance
 const mongod = new MongoMemoryServer();
@@ -59,8 +58,26 @@ test('get all recipes', async t => {
   t.true(res.body.length >= 1);
 });
 
+test.serial('create a recipe', async t => {
+  const { app, recipeRoute, newRecipe } = t.context;
+
+  const res = await request(app)
+    .post(`${recipeRoute}/`)
+    .send(newRecipe);
+  const createdRecipe = res.body;
+
+  t.is(res.status, 200);
+  t.is(createdRecipe.title, newRecipe.title);
+  t.true(Array.isArray(createdRecipe.users));
+  t.true(Array.isArray(createdRecipe.versions));
+
+  // Verify that the recipe was created in DB
+  const recipeInDb = await RecipeService.findById(createdRecipe._id);
+  t.is(recipeInDb.title, createdRecipe.title);
+});
+
 test.after.always(async () => {
-  UserModel.deleteMany();
+  RecipeModel.deleteMany();
   await mongoose.disconnect();
   await mongod.stop();
 });

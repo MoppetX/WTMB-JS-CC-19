@@ -21,14 +21,15 @@ router.get('/all', async (req, res) => {
   }
 });
 
-// router.delete('/all', async (req, res) => {
-//   await RecipeService.delete();
-//   console.log(await RecipeService.find().length);
-//
-//   res.send('USERS PURGED');
-// });
-//
-//
+router.post(`/`, async (req, res) => {
+  try {
+    const recipe = await RecipeService.add(req.body);
+    res.send(recipe);
+  } catch (err) {
+    res.send(err.response.data.message);
+  }
+});
+
 // router.get(`/:id`, async (req, res) => {
 //   const id = req.params.id;
 //   const user = await RecipeService.findById(id);
