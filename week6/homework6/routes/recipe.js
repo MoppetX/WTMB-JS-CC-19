@@ -47,14 +47,34 @@ router.get('/:id', async (req, res) => {
 
 router.get('/', async (req, res) => {
   try {
-    const query = req.query;
-    const recipes = await RecipeService.find(query);
+    const { query, body } = req;
+    const recipes = await RecipeService.find(query).sort(body.sort);
 
     if (recipes.length === 0) {
       res.status(404).send(`Error: Could not find recipes`);
     } else {
       res.send(recipes);
     }
+  } catch (err) {
+    res.send(err.response.data.message);
+  }
+});
+
+router.put('/', async (req, res) => {
+  try {
+    const { query, body } = req;
+    const update = await RecipeService.update(query, body);
+    res.send(update);
+  } catch (err) {
+    res.send(err.response.data.message);
+  }
+});
+
+router.delete('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const status = await RecipeService.deleteById(id);
+    res.send(status);
   } catch (err) {
     res.send(err.response.data.message);
   }

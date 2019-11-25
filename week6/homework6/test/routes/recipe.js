@@ -6,6 +6,7 @@ import mongoose from 'mongoose';
 import app from '../../app';
 import RecipeModel from '../../models/recipe';
 import RecipeService from '../../services/recipe-service';
+import UserService from '../../services/user-service';
 
 // Start MongoDB instance
 const mongod = new MongoMemoryServer();
@@ -46,6 +47,7 @@ test.beforeEach(async t => {
     newRecipe: {
       title: 'Scrambled Eggs',
     },
+    newTitle: 'Yummy Scrambled Eggs',
   };
 });
 
@@ -55,7 +57,26 @@ test('get all recipes', async t => {
 
   t.is(res.status, 200);
   t.true(Array.isArray(res.body));
-  t.true(res.body.length >= 1);
+  t.true(res.body.length >= 2);
+});
+
+test('get recipes via query', async t => {
+  const { app, recipeRoute } = t.context;
+
+  const res = await request(app)
+    .get(`${recipeRoute}/`)
+    .query({
+      title: /Eggs/,
+    })
+    .send({
+      sort: 'title',
+    });
+
+  const foundRecipes = res.body;
+
+  t.is(res.status, 200);
+  t.true(Array.isArray(foundRecipes));
+  t.true(foundRecipes.length >= 2);
 });
 
 test.serial('create a recipe', async t => {
@@ -86,6 +107,40 @@ test.serial('get a recipe via params', async t => {
 
   const fetchedRecipeId = res.body._id.toString();
   t.is(fetchedRecipeId, newRecipeId);
+});
+
+test.serial('update a recipe', async t => {
+  const { app, recipeRoute, newRecipe, newTitle } = t.context;
+  const [recipeInDb] = await RecipeService.find({ title: newRecipe.title });
+  const recipeId = recipeInDb._id.toString();
+
+  const res = await request(app)
+    .put(`${recipeRoute}/`)
+    .query({ _id: recipeId })
+    .send({ title: newTitle });
+
+  t.is(res.status, 200);
+  t.true(res.body.ok === 1);
+
+  const fetched = await request(app).get(`${recipeRoute}/${recipeId}`);
+  const updatedRecipe = fetched.body;
+
+  t.is(fetched.status, 200);
+  t.is(updatedRecipe.title, newTitle);
+});
+
+test.serial('delete one recipe via params', async t => {
+  const { app, recipeRoute, newTitle } = t.context;
+  const [recipeInDb] = await RecipeService.find({ title: newTitle });
+  const recipeId = recipeInDb._id.toString();
+
+  const res = await request(app).delete(`${recipeRoute}/${recipeId}`);
+  t.is(res.status, 200);
+  t.true(res.body.ok === 1);
+
+  // Verify that the recipe is no longer in the DB
+  const fetch = await request(app).get(`${recipeRoute}/${recipeId}`);
+  t.is(fetch.status, 404);
 });
 
 test.after.always(async () => {
