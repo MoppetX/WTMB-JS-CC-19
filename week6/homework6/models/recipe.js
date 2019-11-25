@@ -7,6 +7,10 @@ const RecipeSchema = new mongoose.Schema({
     minlength: [2, 'Title should be longer than 1 letter'],
     maxlength: [30, 'The maximum characters allowed is 30 characters'],
   },
+  created: {
+    type: Date,
+    default: Date.now,
+  },
   versions: [
     {
       type: Object,
