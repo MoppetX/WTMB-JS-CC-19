@@ -17,7 +17,7 @@ test.beforeEach(t => {
       email: {
         required: 'Email is required',
         failedValidation: '@ is not a valid email address!',
-        notUnique: 'A User with this Email already exists',
+        // notUnique: 'A User with this Email already exists',
       },
       password: {
         required: 'Password is required',
@@ -42,7 +42,6 @@ test('creating new user with valid input', async t => {
   t.falsy(error);
   t.true(Array.isArray(validUser.recipes));
   t.true(validUser.recipes.length === 0);
-  // TODO SAI: for how many things should I check here?
   t.is(validUser.name, t.context.user.name);
   t.is(validUser.email, t.context.user.email);
   t.is(validUser.password, t.context.user.password);
@@ -50,63 +49,66 @@ test('creating new user with valid input', async t => {
 
 test('creating a user with invalid username', async t => {
   t.plan(3);
+
   const badProperty = 'name';
+  const badInput = [null, 's', 'sssssssssssssssssssssssssssssss'];
+  const errorMessages = Object.entries(t.context.errorMsgs[badProperty]).map(
+    entry => entry[1],
+  );
 
-  t.context.user.name = null;
-  let errorMsgExpected = t.context.errorMsgs.name.required;
-  let badUser = new UserModel(t.context.user);
-  let errorMsg = getErrorMsg(badUser, badProperty);
-  t.is(errorMsg, errorMsgExpected);
+  let badUser;
+  let errorMsg;
+  let errorMsgExpected;
 
-  t.context.user.name = 's';
-  errorMsgExpected = t.context.errorMsgs.name.tooShort;
-  badUser = new UserModel(t.context.user);
-  errorMsg = getErrorMsg(badUser, badProperty);
-  t.is(errorMsg, errorMsgExpected);
-
-  t.context.user.name = 'sssssssssssssssssssssssssssssss';
-  errorMsgExpected = t.context.errorMsgs.name.tooLong;
-  badUser = new UserModel(t.context.user);
-  errorMsg = getErrorMsg(badUser, badProperty);
-  t.is(errorMsg, errorMsgExpected);
+  badInput.forEach((input, index) => {
+    t.context.user[badProperty] = input;
+    errorMsgExpected = errorMessages[index];
+    badUser = new UserModel(t.context.user);
+    errorMsg = getErrorMsg(badUser, badProperty);
+    t.is(errorMsg, errorMsgExpected);
+  });
 });
 
 test('creating a user with invalid email', async t => {
   t.plan(2);
+
   const badProperty = 'email';
+  const badInput = [null, '@'];
+  const errorMessages = Object.entries(t.context.errorMsgs[badProperty]).map(
+    entry => entry[1],
+  );
 
-  t.context.user.email = null;
-  let errorMsgExpected = t.context.errorMsgs.email.required;
-  let badUser = new UserModel(t.context.user);
-  let errorMsg = getErrorMsg(badUser, badProperty);
-  t.is(errorMsg, errorMsgExpected);
+  let badUser;
+  let errorMsg;
+  let errorMsgExpected;
 
-  t.context.user.email = '@';
-  errorMsgExpected = t.context.errorMsgs.email.failedValidation;
-  badUser = new UserModel(t.context.user);
-  errorMsg = getErrorMsg(badUser, badProperty);
-  t.is(errorMsg, errorMsgExpected);
+  badInput.forEach((input, index) => {
+    t.context.user[badProperty] = input;
+    errorMsgExpected = errorMessages[index];
+    badUser = new UserModel(t.context.user);
+    errorMsg = getErrorMsg(badUser, badProperty);
+    t.is(errorMsg, errorMsgExpected);
+  });
 });
 
 test('creating a user with invalid password', async t => {
-  // t.plan(3);
+  t.plan(3);
+
   const badProperty = 'password';
+  const badInput = [null, 's', 'sssssssssssssssssssssssssssssss'];
+  const errorMessages = Object.entries(t.context.errorMsgs[badProperty]).map(
+    entry => entry[1],
+  );
 
-  t.context.user.password = null;
-  let errorMsgExpected = t.context.errorMsgs.password.required;
-  let badUser = new UserModel(t.context.user);
-  let errorMsg = getErrorMsg(badUser, badProperty);
-  t.is(errorMsg, errorMsgExpected);
+  let badUser;
+  let errorMsg;
+  let errorMsgExpected;
 
-  t.context.user.password = 's';
-  errorMsgExpected = t.context.errorMsgs.password.tooShort;
-  badUser = new UserModel(t.context.user);
-  errorMsg = getErrorMsg(badUser, badProperty);
-  t.is(errorMsg, errorMsgExpected);
-
-  t.context.user.password = 'sssssssssssssssssssssssssssssss';
-  errorMsgExpected = t.context.errorMsgs.password.tooLong;
-  badUser = new UserModel(t.context.user);
-  errorMsg = getErrorMsg(badUser, badProperty);
-  t.is(errorMsg, errorMsgExpected);
+  badInput.forEach((input, index) => {
+    t.context.user[badProperty] = input;
+    errorMsgExpected = errorMessages[index];
+    badUser = new UserModel(t.context.user);
+    errorMsg = getErrorMsg(badUser, badProperty);
+    t.is(errorMsg, errorMsgExpected);
+  });
 });
