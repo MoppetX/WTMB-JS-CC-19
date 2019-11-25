@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const HttpStatus = require('http-status-codes');
 // const RecipeService = require('../services/recipe-service');
 
-router.get('/test', (req, res) => res.send('Test route for recipe [GET]'));
+const litmusResponseMsg = req =>
+  `Test route for ${req.originalUrl} [${req.method}]`;
 
-router.post('/test', (req, res) =>
-  res.status(HttpStatus.OK).send('Test route for recipe [POST]'),
-);
+router.get('/litmus', (req, res) => res.send(litmusResponseMsg(req)));
+router.post('/litmus', (req, res) => res.send(litmusResponseMsg(req)));
+router.delete('/litmus', (req, res) => res.send(litmusResponseMsg(req)));
+router.put('/litmus', (req, res) => res.send(litmusResponseMsg(req)));
 
 //
 // router.get('/all', async (req, res) => {
