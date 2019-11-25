@@ -97,6 +97,18 @@ test.serial('create a user', async t => {
   t.is(newUserInDb.name, newUser.name);
 });
 
+test.serial('get a user via params', async t => {
+  const { app, userRoute, newUser: user } = t.context;
+  const [userInDb] = await UserService.find({ email: user.email });
+  const userId = userInDb._id.toString();
+
+  const res = await request(app).get(`${userRoute}/${userId}`);
+  t.is(res.status, 200);
+
+  const fetchedUserId = res.body._id.toString();
+  t.is(fetchedUserId, userId);
+});
+
 test.serial('get a user via query', async t => {
   const { app, userRoute, newUser } = t.context;
   const [userInDb] = await UserService.find({ email: newUser.email });
@@ -111,19 +123,6 @@ test.serial('get a user via query', async t => {
 
   t.is(res.status, 200);
   t.is(foundUserId, userId);
-});
-
-test.serial('get a user via params', async t => {
-  const { app, userRoute, newUser: user } = t.context;
-  const [userInDb] = await UserService.find({ email: user.email });
-  const userId = userInDb._id.toString();
-
-  const res = await request(app).get(`${userRoute}/${userId}`);
-
-  t.is(res.status, 200);
-
-  const fetchedUserId = res.body._id.toString();
-  t.is(fetchedUserId, userId);
 });
 
 test.serial('update a user', async t => {
