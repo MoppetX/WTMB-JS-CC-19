@@ -87,3 +87,26 @@ test('creating a user with invalid email', async t => {
   errorMsg = getErrorMsg(badUser, badProperty);
   t.is(errorMsg, errorMsgExpected);
 });
+
+test('creating a user with invalid password', async t => {
+  // t.plan(3);
+  const badProperty = 'password';
+
+  t.context.user.password = null;
+  let errorMsgExpected = t.context.errorMsgs.password.required;
+  let badUser = new UserModel(t.context.user);
+  let errorMsg = getErrorMsg(badUser, badProperty);
+  t.is(errorMsg, errorMsgExpected);
+
+  t.context.user.password = 's';
+  errorMsgExpected = t.context.errorMsgs.password.tooShort;
+  badUser = new UserModel(t.context.user);
+  errorMsg = getErrorMsg(badUser, badProperty);
+  t.is(errorMsg, errorMsgExpected);
+
+  t.context.user.password = 'sssssssssssssssssssssssssssssss';
+  errorMsgExpected = t.context.errorMsgs.password.tooLong;
+  badUser = new UserModel(t.context.user);
+  errorMsg = getErrorMsg(badUser, badProperty);
+  t.is(errorMsg, errorMsgExpected);
+});
