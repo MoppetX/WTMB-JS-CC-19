@@ -76,7 +76,7 @@ test('creating a user with invalid password', async t => {
   t.plan(3);
 
   const property = 'password';
-  const badInputs = [null, '1', '123456789012345678901234567890'];
+  const badInputs = [null, '1', '123456789012345678901234567890X'];
   const errorMessages = getErrMsgArray(property);
 
   badInputs.forEach((input, index) => {
