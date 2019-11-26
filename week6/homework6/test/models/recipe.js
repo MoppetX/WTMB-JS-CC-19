@@ -27,7 +27,6 @@ test('creating new recipe with valid input', async t => {
     Array.isArray(validRecipe.versions) && validRecipe.versions.length === 0,
   );
   t.true(Array.isArray(validRecipe.users));
-  console.log(validRecipe.users);
   t.truthy(validRecipe.created);
 });
 
