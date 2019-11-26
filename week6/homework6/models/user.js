@@ -1,25 +1,27 @@
 const mongoose = require('mongoose');
 const isEmail = require('validator/lib/isEmail');
+const { userModelErrorMsgs: errMsgs } = require('./modelErrorMsgs');
 
 // const Recipe = require('./recipe');
 
 const UserSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'User name is required'],
+    required: [true, errMsgs.NAME.REQUIRED],
     // defining an error message
-    minlength: [2, 'Name should be longer than 1 letter'],
-    maxlength: [20, 'The maximum characters allowed is 20 characters'],
+    minlength: [2, errMsgs.NAME.TOO_SHORT],
+    maxlength: [20, errMsgs.NAME.TOO_LONG],
   },
   email: {
     type: String,
-    required: [true, 'Email is required'],
+    required: [true, errMsgs.EMAIL.REQUIRED],
+    // TODO: extra errorMsg for the unique validator
     unique: [true, 'A User with this Email already exists'],
     validate: {
       validator: function(valueToValidate) {
         return isEmail(valueToValidate);
       },
-      message: props => `${props.value} is not a valid email address!`,
+      message: () => errMsgs.EMAIL.FAILED_VALIDATION,
     },
   },
   password: {
