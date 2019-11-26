@@ -16,6 +16,8 @@ const userModelErrorMsgs = {
   },
 };
 
+Object.freeze(userModelErrorMsgs);
+
 const recipeModelErrorMsgs = {
   TITLE: {
     REQUIRED: 'Title is required',
@@ -23,5 +25,7 @@ const recipeModelErrorMsgs = {
     TOO_LONG: 'The maximum characters allowed is 30',
   },
 };
+
+Object.freeze(recipeModelErrorMsgs);
 
 module.exports = { userModelErrorMsgs, recipeModelErrorMsgs };

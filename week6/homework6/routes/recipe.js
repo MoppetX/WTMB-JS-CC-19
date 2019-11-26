@@ -41,7 +41,7 @@ router.get('/:id', async (req, res) => {
       res.send(recipe);
     }
   } catch (err) {
-    res.status(500).send(err.response.data.message);
+    res.send(err.response.data.message);
   }
 });
 
