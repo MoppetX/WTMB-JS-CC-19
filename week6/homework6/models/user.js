@@ -26,9 +26,9 @@ const UserSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, 'Password is required'],
-    minlength: [6, 'the minimum length is 6 characters'],
-    maxlength: [30, 'the maximum characters allowed is 30'],
+    required: [true, errMsgs.PASSWORD.REQUIRED],
+    minlength: [6, errMsgs.PASSWORD.TOO_SHORT],
+    maxlength: [30, errMsgs.PASSWORD.TOO_LONG],
   },
   recipes: [
     {
