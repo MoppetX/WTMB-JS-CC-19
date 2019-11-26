@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
+const { recipeModelErrorMsgs: errMsgs } = require('./modelErrorMsgs');
 
 const RecipeSchema = new mongoose.Schema({
   title: {
     type: String,
-    required: [true, 'Title is required'],
-    minlength: [2, 'Title should be longer than 1 letter'],
-    maxlength: [30, 'The maximum characters allowed is 30 characters'],
+    required: [true, errMsgs.TITLE.REQUIRED],
+    minlength: [2, errMsgs.TITLE.TOO_SHORT],
+    maxlength: [30, errMsgs.TITLE.TOO_LONG],
   },
   created: {
     type: Date,
