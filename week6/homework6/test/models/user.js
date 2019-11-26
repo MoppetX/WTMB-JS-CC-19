@@ -2,11 +2,11 @@ import test from 'ava';
 import UserModel from '../../models/user';
 
 const {
-  userModelErrorMsgs: newErrMsgs,
+  userModelErrorMsgs: errorMessages,
 } = require('../../models/modelErrorMsgs');
 
 const getErrMsgArray = property =>
-  Object.entries(newErrMsgs[property.toUpperCase()]).map(entry => entry[1]);
+  Object.entries(errorMessages[property.toUpperCase()]).map(entry => entry[1]);
 
 test.beforeEach(t => {
   t.context = {
@@ -76,7 +76,7 @@ test('creating a user with invalid password', async t => {
   t.plan(3);
 
   const property = 'password';
-  const badInputs = [null, 's', 'sssssssssssssssssssssssssssssss'];
+  const badInputs = [null, '1', '123456789012345678901234567890'];
   const errorMessages = getErrMsgArray(property);
 
   badInputs.forEach((input, index) => {
