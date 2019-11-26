@@ -35,7 +35,7 @@ test('creating new user with valid input', async t => {
 const testInput = (input, index, t, property, errorMessages) => {
   // setting a field on the context user object to an invalid value
   t.context.user[property] = input;
-  // because errorMessages is an array, we need to keep up in it within out forEach
+  // because errorMessages is an array, we need to keep up in it within our forEach
   let errorMsgExpected = errorMessages[index];
 
   // after creating badUser, using a mongoose validator func
@@ -50,13 +50,12 @@ const testInput = (input, index, t, property, errorMessages) => {
 };
 
 test('creating a user with invalid username', async t => {
-  t.plan(3);
-
   const property = 'name';
-  const badInput = [null, 's', 'sssssssssssssssssssssssssssssss'];
+  const badInputs = [null, 's', 'sssssssssssssssssssssssssssssss'];
   const errorMessages = getErrMsgArray(property);
+  t.plan(badInputs.length);
 
-  badInput.forEach((input, index) => {
+  badInputs.forEach((input, index) => {
     testInput(input, index, t, property, errorMessages);
   });
 });
@@ -65,10 +64,10 @@ test('creating a user with invalid email', async t => {
   t.plan(2);
 
   const property = 'email';
-  const badInput = [null, '@'];
+  const badInputs = [null, '@'];
   const errorMessages = getErrMsgArray(property);
 
-  badInput.forEach((input, index) => {
+  badInputs.forEach((input, index) => {
     testInput(input, index, t, property, errorMessages);
   });
 });
@@ -77,10 +76,10 @@ test('creating a user with invalid password', async t => {
   t.plan(3);
 
   const property = 'password';
-  const badInput = [null, 's', 'sssssssssssssssssssssssssssssss'];
+  const badInputs = [null, 's', 'sssssssssssssssssssssssssssssss'];
   const errorMessages = getErrMsgArray(property);
 
-  badInput.forEach((input, index) => {
+  badInputs.forEach((input, index) => {
     testInput(input, index, t, property, errorMessages);
   });
 });
